@@ -1,3 +1,4 @@
+import { motion, useDragControls } from 'framer-motion';
 import { PointerEvent, useRef, useState } from 'react';
 import {
 	formatTimeUnit,
@@ -15,6 +16,12 @@ export interface IDayColumnProps {
 export function DayColumn({ weekDay }: IDayColumnProps) {
 	const [timeSlots, setTimeSlots] = useState<any[]>([]);
 	const columnRef = useRef<HTMLDivElement>(null);
+
+	const dragControls = useDragControls();
+
+	function startDrag(e: PointerEvent<HTMLDivElement>) {
+		dragControls.start(e, { snapToCursor: false });
+	}
 
 	function handleClick(e: PointerEvent<HTMLDivElement>) {
 		const { clientY: clickY } = e;
@@ -47,8 +54,13 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 	}
 
 	return (
-		<div id="DayColumn">
-			<div className="heading">
+		<motion.div
+			id="DayColumn"
+			drag
+			dragControls={dragControls}
+			dragListener={false} // prevents drag by directly clicking the element
+		>
+			<div className="heading" onPointerDown={startDrag}>
 				<h4>{weekDay}</h4>
 			</div>
 
@@ -65,6 +77,6 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 					/>
 				))}
 			</div>
-		</div>
+		</motion.div>
 	);
 }
