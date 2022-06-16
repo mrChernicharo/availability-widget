@@ -15,3 +15,8 @@ export function getFormatedTime(time: number) {
 
 	return `${formatTimeUnit(h)}:${formatTimeUnit(m)}`;
 }
+
+//******************//
+
+export function translateTimeToY(startTime: number) {}
+export function translateTimeToHeight(startTime: number, endTime: number) {}

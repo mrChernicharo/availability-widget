@@ -1,11 +1,18 @@
 :root {
 	--primary-color: rgb(76, 79, 217);
+	--column-width: 100px;
+	--time-slot-width: calc(var(--column-width) - 4px);
+	--column-height: 0; // set via js
 }
 
 @mixin flex($justify: center, $align: center) {
 	display: flex;
 	justify-content: $justify;
 	align-items: $align;
+}
+
+* {
+	box-sizing: border-box;
 }
 
 body {
@@ -31,11 +38,11 @@ h4 {
 }
 
 #AvailabilityWidget {
-	height: 700px;
+	height: var(--column-height);
 }
 
 #DayColumn {
-	width: 100px;
+	width: var(--column-width);
 	height: 100%;
 	border: 1px solid;
 	display: flex;
@@ -52,6 +59,15 @@ h4 {
 	.content {
 		// height: calc(100% - var(--heading-height));
 		height: 100%;
-		border: 1px solid red;
+		border: 1px solid purple;
+
+		.time-slot {
+			position: absolute;
+			border: 1px solid red;
+			background-color: coral;
+			opacity: 0.6;
+			font-size: small;
+			width: var(--time-slot-width);
+		}
 	}
 }
