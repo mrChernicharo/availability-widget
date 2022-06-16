@@ -1,3 +1,5 @@
+import { COLUMN_HEIGHT } from './constants';
+
 export function getHoursFromTime(time: number) {
 	return Math.floor(time / 60);
 }
@@ -18,5 +20,18 @@ export function getFormatedTime(time: number) {
 
 //******************//
 
-export function translateTimeToY(startTime: number) {}
-export function translateTimeToHeight(startTime: number, endTime: number) {}
+export function translateTimeToY(startTime: number) {
+	const timePerPx = 1440 / COLUMN_HEIGHT;
+	const pxPerMinute = COLUMN_HEIGHT / 1440;
+	const yPos = startTime * pxPerMinute;
+
+	return yPos;
+}
+export function translateTimeToHeight(startTime: number, endTime: number) {
+	const yPos = translateTimeToY(startTime);
+	const yEnd = translateTimeToY(endTime);
+
+	const height = yEnd - yPos;
+
+	console.log({ yPos, yEnd, height });
+}

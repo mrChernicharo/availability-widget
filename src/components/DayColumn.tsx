@@ -3,6 +3,8 @@ import {
 	formatTimeUnit,
 	getHoursFromTime,
 	getMinutesFromTime,
+	translateTimeToHeight,
+	translateTimeToY,
 } from '../lib/helpers';
 import { TimeSlot } from './TimeSlot';
 
@@ -35,6 +37,9 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 		};
 
 		setTimeSlots(ts => [...ts, newTimeSlot]);
+
+		translateTimeToY(newTimeSlot.start);
+		translateTimeToHeight(newTimeSlot.start, newTimeSlot.end);
 	}
 
 	function handleTimeSlotChange(timeSlot) {

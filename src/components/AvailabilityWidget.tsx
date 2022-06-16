@@ -1,7 +1,6 @@
 import * as React from 'react';
+import { COLUMN_HEIGHT } from '../lib/constants';
 import { DayColumn } from './DayColumn';
-
-const COLUMN_HEIGHT = 700;
 
 interface IAvailabilityWidgetProps {}
 
