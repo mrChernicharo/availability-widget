@@ -1,4 +1,9 @@
 import { PointerEvent, useRef, useState } from 'react';
+import {
+	formatTimeUnit,
+	getHoursFromTime,
+	getMinutesFromTime,
+} from '../lib/helpers';
 import { TimeSlot } from './TimeSlot';
 
 export interface IDayColumnProps {
@@ -16,20 +21,12 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 		const columnYClick = clickY - top;
 		const ClickVerticalPercentage = (columnYClick / height) * 100;
 		const timeClicked = (ClickVerticalPercentage * 1440) / 100;
-		const hourClicked = Math.floor(timeClicked / 60);
-		const minuteClicked = Math.floor(timeClicked % 60);
-		const formattedHour =
-			hourClicked > 10 ? `${hourClicked}` : `0${hourClicked}`;
-		const formattedMinute =
-			minuteClicked > 10 ? `${minuteClicked}` : `0${minuteClicked}`;
 
-		console.log({
-			columnYClick,
-			ClickVerticalPercentage,
-			timeClicked,
-			hourClicked,
-			minuteClicked,
-		});
+		const hourClicked = getHoursFromTime(timeClicked);
+		const minuteClicked = getMinutesFromTime(timeClicked);
+		const formattedHour = formatTimeUnit(hourClicked);
+		const formattedMinute = formatTimeUnit(minuteClicked);
+
 		console.log(`${formattedHour}:${formattedMinute}`);
 
 		const newTimeSlot = {

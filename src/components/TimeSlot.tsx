@@ -1,4 +1,5 @@
 import {} from 'react';
+import { getFormatedTime } from '../lib/helpers';
 import { ITimeSlot } from '../lib/types';
 
 interface ITimeSlotProps {
@@ -9,7 +10,11 @@ interface ITimeSlotProps {
 export function TimeSlot({ timeSlot, onChange }: ITimeSlotProps) {
 	return (
 		<div>
-			<p>{`${timeSlot.start + '-' + timeSlot.end}`}</p>
+			<p>{`${
+				getFormatedTime(timeSlot.start) +
+				'-' +
+				getFormatedTime(timeSlot.end)
+			}`}</p>
 		</div>
 	);
 }
