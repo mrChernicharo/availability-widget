@@ -61,6 +61,11 @@
 				cursor: pointer;
 			}
 			.central-area {
+				border: 1px dashed red;
+				background-color: orange;
+				width: 100%;
+				height: calc(100% - 16px);
+				// height: 100%;
 			}
 		}
 	}

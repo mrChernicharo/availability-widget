@@ -4,9 +4,8 @@ import {
 	formatTimeUnit,
 	getHoursFromTime,
 	getMinutesFromTime,
-	translateTimeToHeight,
-	translateTimeToY,
 } from '../lib/helpers';
+import { ITimeSlot } from '../lib/types';
 import { TimeSlot } from './TimeSlot';
 
 export interface IDayColumnProps {
@@ -14,7 +13,7 @@ export interface IDayColumnProps {
 }
 
 export function DayColumn({ weekDay }: IDayColumnProps) {
-	const [timeSlots, setTimeSlots] = useState<any[]>([]);
+	const [timeSlots, setTimeSlots] = useState<ITimeSlot[]>([]);
 	const columnRef = useRef<HTMLDivElement>(null);
 
 	const dragControls = useDragControls();
@@ -25,10 +24,11 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 
 	function handleClick(e: PointerEvent<HTMLDivElement>) {
 		const { clientY: clickY } = e;
-		const { height, top } = columnRef.current?.getBoundingClientRect()!;
+		const { height: ColumnHeight, top: ColumnTop } =
+			columnRef.current?.getBoundingClientRect()!;
 
-		const columnYClick = clickY - top;
-		const ClickVerticalPercentage = (columnYClick / height) * 100;
+		const columnYClick = clickY - ColumnTop;
+		const ClickVerticalPercentage = (columnYClick / ColumnHeight) * 100;
 		const timeClicked = (ClickVerticalPercentage * 1440) / 100;
 
 		const hourClicked = getHoursFromTime(timeClicked);
@@ -38,18 +38,33 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 
 		console.log(`${formattedHour}:${formattedMinute}`);
 
+		// are we close to the edges?
+		let [slotStart, slotEnd] = [timeClicked - 30, timeClicked + 30];
+
+		if (slotStart < 30) {
+			[slotStart, slotEnd] = [0, 60];
+		}
+		if (slotEnd > 1440) {
+			[slotStart, slotEnd] = [1380, 1440];
+		}
+
 		// newSlot will span for 1h. The click position will be in the exact middle of the timeSlot
 		const newTimeSlot = {
-			start: timeClicked - 30,
-			end: timeClicked + 30,
+			start: slotStart,
+			end: slotEnd,
 		};
 
-		// limit min/max......................................
+		// are we hitting some existing slot?
+		let hitNobody = true;
+		timeSlots.forEach((slot, i) => {
+			if (timeClicked >= slot.start && timeClicked <= slot.end) {
+				hitNobody = false;
+			}
+		});
 
-		setTimeSlots(ts => [...ts, newTimeSlot]);
-
-		translateTimeToY(newTimeSlot.start);
-		translateTimeToHeight(newTimeSlot.start, newTimeSlot.end);
+		if (hitNobody) {
+			setTimeSlots(ts => [...ts, newTimeSlot]);
+		}
 	}
 
 	function handleTimeSlotChange(timeSlot) {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { translateTimeToHeight, translateTimeToY } from '../lib/helpers';
 import { ITimeSlot } from '../lib/types';
 
@@ -9,6 +9,7 @@ interface ITimeSlotProps {
 
 export function TimeSlot({ timeSlot, onChange }: ITimeSlotProps) {
 	const { start, end } = timeSlot;
+	const slotRef = useRef<HTMLDivElement>(null);
 	const [y, setY] = useState(() => translateTimeToY(start));
 	const [height, setHeight] = useState(() =>
 		translateTimeToHeight(start, end)
@@ -17,12 +18,12 @@ export function TimeSlot({ timeSlot, onChange }: ITimeSlotProps) {
 	// getY
 	// getHeight
 
-	useEffect(() => {
-		// setY()
-		console.log('hahahhaah', { timeSlot, y, height });
-	}, [timeSlot]);
+	// useEffect(() => {
+	// 	// setY()
+	// console.log({ timeSlot, y, height });
+	// }, [timeSlot]);
 	return (
-		<div className="time-slot" style={{ top: y, height }}>
+		<div ref={slotRef} className="time-slot" style={{ top: y, height }}>
 			<div className="top-drag-area"></div>
 			<div className="central-area"></div>
 			<div className="bottom-drag-area"></div>
