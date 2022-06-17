@@ -33,5 +33,5 @@ export function translateTimeToHeight(startTime: number, endTime: number) {
 
 	const height = yEnd - yPos;
 
-	console.log({ yPos, yEnd, height });
+	return height;
 }

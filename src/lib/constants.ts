@@ -1,1 +1,1 @@
-export const COLUMN_HEIGHT = 700;
+export const COLUMN_HEIGHT = 768;

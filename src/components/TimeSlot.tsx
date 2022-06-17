@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { getFormatedTime, translateTimeToY } from '../lib/helpers';
+import { useEffect, useState } from 'react';
+import { translateTimeToHeight, translateTimeToY } from '../lib/helpers';
 import { ITimeSlot } from '../lib/types';
 
 interface ITimeSlotProps {
@@ -8,15 +8,26 @@ interface ITimeSlotProps {
 }
 
 export function TimeSlot({ timeSlot, onChange }: ITimeSlotProps) {
-	const [y, setY] = useState(() => translateTimeToY(timeSlot.start));
-	const [height, setHeight] = useState(0);
+	const { start, end } = timeSlot;
+	const [y, setY] = useState(() => translateTimeToY(start));
+	const [height, setHeight] = useState(() =>
+		translateTimeToHeight(start, end)
+	);
 
-	// getX
+	// getY
 	// getHeight
+
+	useEffect(() => {
+		// setY()
+		console.log('hahahhaah', { timeSlot, y, height });
+	}, [timeSlot]);
 	return (
-		<div className="time-slot" style={{ top: y }}>
+		<div className="time-slot" style={{ top: y, height }}>
+			<div className="top-drag-area"></div>
+			<div className="central-area"></div>
+			<div className="bottom-drag-area"></div>
 			{/* prettier-ignore */}
-			<p>{`${getFormatedTime(timeSlot.start)} - ${getFormatedTime(timeSlot.end)}`}</p>
+			{/* <p>{`${getFormatedTime(timeSlot.start)} - ${getFormatedTime(timeSlot.end)}`}</p> */}
 		</div>
 	);
 }

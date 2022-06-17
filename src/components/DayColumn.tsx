@@ -38,10 +38,13 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 
 		console.log(`${formattedHour}:${formattedMinute}`);
 
+		// newSlot will span for 1h. The click position will be in the exact middle of the timeSlot
 		const newTimeSlot = {
-			start: timeClicked,
-			end: timeClicked + 60,
+			start: timeClicked - 30,
+			end: timeClicked + 30,
 		};
+
+		// limit min/max......................................
 
 		setTimeSlots(ts => [...ts, newTimeSlot]);
 
