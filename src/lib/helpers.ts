@@ -21,7 +21,6 @@ export function getFormatedTime(time: number) {
 //******************//
 
 export function translateTimeToY(startTime: number) {
-	const timePerPx = 1440 / COLUMN_HEIGHT;
 	const pxPerMinute = COLUMN_HEIGHT / 1440;
 	const yPos = startTime * pxPerMinute;
 
@@ -34,4 +33,8 @@ export function translateTimeToHeight(startTime: number, endTime: number) {
 	const height = yEnd - yPos;
 
 	return height;
+}
+
+export function translateYToTime(y: number) {
+	const timePerPx = 1440 / COLUMN_HEIGHT;
 }
