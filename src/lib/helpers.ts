@@ -38,3 +38,20 @@ export function translateTimeToHeight(startTime: number, endTime: number) {
 export function translateYToTime(y: number) {
 	const timePerPx = 1440 / COLUMN_HEIGHT;
 }
+
+export function yToTime(
+	clickY: number,
+	columnHeight: number,
+	columnTop: number
+) {
+	const columnYClick = clickY - columnTop;
+	const ClickVerticalPercentage = (columnYClick / columnHeight) * 100;
+	const timeClicked = (ClickVerticalPercentage * 1440) / 100;
+	return Math.abs(Math.round(timeClicked));
+}
+
+// *************************** //
+
+export function getElementRect(ref: React.RefObject<HTMLDivElement>) {
+	return ref.current?.getBoundingClientRect()!;
+}

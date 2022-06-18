@@ -1,6 +1,6 @@
 import { motion, useDragControls } from 'framer-motion';
 import { PointerEvent, useEffect, useRef, useState } from 'react';
-import { getFormatedTime, translateTimeToY } from '../lib/helpers';
+import { getElementRect, getFormatedTime, yToTime } from '../lib/helpers';
 import { ITimeSlot } from '../lib/types';
 import { TimeSlot } from './TimeSlot';
 
@@ -18,38 +18,30 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 		dragControls.start(e, { snapToCursor: false });
 	}
 
-	function getElementRect(ref: React.RefObject<HTMLDivElement>) {
-		const { height, top } = ref.current?.getBoundingClientRect()!;
-		return { height, top };
-	}
-
-	function getCoords(e: PointerEvent<HTMLDivElement>) {
-		const { clientY: clickY } = e;
-
+	function handleClick(e: PointerEvent<HTMLDivElement>) {
 		const { height: columnHeight, top: columnTop } =
 			getElementRect(columnRef);
 
-		return { clickY, columnHeight, columnTop };
-	}
-
-	function getCursorTime(
-		clickY: number,
-		columnHeight: number,
-		columnTop: number
-	) {
-		const columnYClick = clickY - columnTop;
-		const ClickVerticalPercentage = (columnYClick / columnHeight) * 100;
-		const timeClicked = (ClickVerticalPercentage * 1440) / 100;
-		return timeClicked;
-	}
-
-	function handleClick(e: PointerEvent<HTMLDivElement>) {
-		const { clickY, columnHeight, columnTop } = getCoords(e);
-		const timeClicked = getCursorTime(clickY, columnHeight, columnTop);
+		const timeClicked = yToTime(e.clientY, columnHeight, columnTop);
 
 		const formated = getFormatedTime(timeClicked);
 
 		console.log(`${formated}`);
+
+		// are we hitting some existing timeSlot?
+		const hitNobody = !timeSlots.find(
+			slot => timeClicked >= slot.start && timeClicked <= slot.end
+		);
+
+		if (!hitNobody) {
+			console.log(
+				'HIT!!!',
+				timeSlots.find(
+					slot => timeClicked >= slot.start && timeClicked <= slot.end
+				)
+			);
+			return;
+		}
 
 		// are we close to the edges?
 		let [slotStart, slotEnd] = [timeClicked - 30, timeClicked + 30];
@@ -63,30 +55,31 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 
 		// newSlot will span for 1h. The click position will be in the exact middle of the timeSlot
 		const newTimeSlot = {
+			id: timeSlots.length + 1,
 			start: slotStart,
 			end: slotEnd,
 		};
 
-		// are we hitting some existing timeSlot?
-		const hitNobody = !timeSlots.find(
-			slot => timeClicked >= slot.start && timeClicked <= slot.end
-		);
-
-		if (hitNobody) {
-			setTimeSlots(ts => [...ts, newTimeSlot]);
-		}
+		setTimeSlots(ts => [...ts, newTimeSlot]);
 	}
 
 	function handleHover(e: PointerEvent<HTMLDivElement>) {
-		const { clickY, columnHeight, columnTop } = getCoords(e);
-		const timeHovered = getCursorTime(clickY, columnHeight, columnTop);
+		const { height: columnHeight, top: columnTop } =
+			getElementRect(columnRef);
 
-		console.log('Enter', { timeHovered, y: translateTimeToY(timeHovered) });
+		const timeHovered = yToTime(e.clientY, columnHeight, columnTop);
+
+		// console.log('Enter', { timeHovered, y: translateTimeToY(timeHovered) });
 	}
 
-	function handleTimeSlotChange(timeSlot) {
+	function handleTimeSlotChange(timeSlot: ITimeSlot) {
 		// check if should merge timeslots
 		console.log(timeSlot);
+
+		setTimeSlots([
+			...timeSlots.filter(ts => ts.id !== timeSlot.id),
+			timeSlot,
+		]);
 	}
 
 	useEffect(() => {
@@ -113,11 +106,9 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 				{timeSlots.map((timeSlot, i) => (
 					<TimeSlot
 						key={i}
-						id={i}
 						timeSlot={timeSlot}
 						onPosChange={handleTimeSlotChange}
 						constraintsRef={columnRef}
-						containerDims={getElementRect(columnRef)}
 					/>
 				))}
 			</div>
