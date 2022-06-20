@@ -1,4 +1,5 @@
 import { COLUMN_HEIGHT } from './constants';
+import { ITimeSlot } from './types';
 
 export function getHoursFromTime(time: number) {
 	return Math.floor(time / 60);
@@ -54,4 +55,47 @@ export function yToTime(
 
 export function getElementRect(ref: React.RefObject<HTMLDivElement>) {
 	return ref.current?.getBoundingClientRect()!;
+}
+
+export function mergeTimeslots(
+	timeSlots: ITimeSlot[],
+	overlappingIds: number[]
+) {
+	const overlapping = timeSlots.filter(item =>
+		overlappingIds.includes(item.id)
+	);
+
+	const mergedSlot = overlapping.reduce(
+		(acc, next) => {
+			acc = {
+				id: Math.random() * 1000,
+				start: Math.min(acc.start, next.start),
+				end: Math.max(acc.end, next.end),
+			};
+			return acc;
+		},
+		{
+			id: 0,
+			start: overlapping[0].start,
+			end: overlapping[0].end,
+		}
+	);
+
+	console.log('mergedSlot', mergedSlot);
+
+	return mergedSlot;
+}
+
+export function findOverlappingSlots(timeSlot, newTimeSlots) {
+	const { start, end } = timeSlot;
+	// check if should merge timeslots
+	// prettier-ignore
+	const overlappingItems = newTimeSlots.filter(
+		(s, i) =>
+			(start < s.start && start < s.end && end > s.start && end < s.end) || // top overlap
+			(start > s.start && start < s.end && end > s.start && end < s.end) || // fit inside
+			(start > s.start && start < s.end && end > s.start && end > s.end) || // bottom overlap
+			(start < s.start && start < s.end && end > s.start && end > s.end) // encompass
+	);
+	return overlappingItems;
 }

@@ -1,6 +1,13 @@
 import { motion, useDragControls } from 'framer-motion';
+import { nanoid } from 'nanoid';
 import { PointerEvent, useEffect, useRef, useState } from 'react';
-import { getElementRect, getFormatedTime, yToTime } from '../lib/helpers';
+import {
+	findOverlappingSlots,
+	getElementRect,
+	getFormatedTime,
+	mergeTimeslots,
+	yToTime,
+} from '../lib/helpers';
 import { ITimeSlot } from '../lib/types';
 import { TimeSlot } from './TimeSlot';
 
@@ -73,13 +80,30 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 	}
 
 	function handleTimeSlotChange(timeSlot: ITimeSlot) {
-		// check if should merge timeslots
-		console.log(timeSlot);
+		let newTimeSlots = timeSlots.map(ts =>
+			ts.id !== timeSlot.id ? ts : { ...timeSlot }
+		);
 
-		setTimeSlots([
-			...timeSlots.filter(ts => ts.id !== timeSlot.id),
-			timeSlot,
-		]);
+		const overlappingItems = findOverlappingSlots(timeSlot, newTimeSlots);
+		// are we hitting some existing timeSlot?
+
+		if (overlappingItems.length) {
+			const overlappingIds = overlappingItems
+				.map(item => item.id)
+				.concat(timeSlot.id);
+
+			const mergedSlot = mergeTimeslots(newTimeSlots, overlappingIds);
+
+			const filteredSlots = newTimeSlots.filter(
+				item => !overlappingIds.includes(item.id)
+			);
+
+			const mergedSlots = [...filteredSlots, mergedSlot];
+
+			setTimeSlots(mergedSlots);
+		} else {
+			setTimeSlots(newTimeSlots);
+		}
 	}
 
 	useEffect(() => {
@@ -105,7 +129,7 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 			>
 				{timeSlots.map((timeSlot, i) => (
 					<TimeSlot
-						key={i}
+						key={nanoid()}
 						timeSlot={timeSlot}
 						onPosChange={handleTimeSlotChange}
 						constraintsRef={columnRef}

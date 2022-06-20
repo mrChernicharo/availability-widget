@@ -1,7 +1,8 @@
 import { motion, useDragControls, useMotionValue } from 'framer-motion';
-import { PointerEvent, useEffect, useRef } from 'react';
+import { PointerEvent, useRef } from 'react';
 import {
 	getElementRect,
+	getFormatedTime,
 	translateTimeToHeight,
 	translateTimeToY,
 	yToTime,
@@ -22,15 +23,11 @@ export function TimeSlot({
 	const { id, start, end } = timeSlot;
 	const slotRef = useRef<HTMLDivElement>(null);
 
-	// time => y
-	const [minY, maxY] = [translateTimeToY(0), translateTimeToY(1440)];
 	const y = useMotionValue(translateTimeToY(start));
-	// const y = translateTimeToY(start);
 	const height = translateTimeToHeight(start, end);
-
 	const dragControls = useDragControls();
 
-	// const parseClick = (clickY: number) => clickY - containerDims.top;
+	// console.log({ y: y.get(), height, start });
 
 	function startDrag(e: PointerEvent<HTMLDivElement>) {
 		dragControls.start(e, { snapToCursor: false });
@@ -41,7 +38,6 @@ export function TimeSlot({
 		const { height: columnHeight, top: columnTop } =
 			getElementRect(constraintsRef);
 
-		// get what next times are
 		let [newStart, newEnd] = [
 			yToTime(top, columnHeight, columnTop),
 			yToTime(bottom, columnHeight, columnTop),
@@ -53,17 +49,19 @@ export function TimeSlot({
 			end: newEnd,
 		};
 
-		// emit new TimeSlot up
 		onPosChange(newSlot);
 
 		return variation;
 	}
 
-	function endDrag(e: PointerEvent<HTMLDivElement>) {}
+	function endDrag(e: PointerEvent<HTMLDivElement>) {
+		// y.updateAndNotify(y.get());
+		// y.set(y.get());
+	}
 
-	useEffect(() => {
-		// console.log(containerDims);
-	}, []);
+	// useEffect(() => {
+	// console.log(containerDims);
+	// }, []);
 
 	return (
 		<motion.div
@@ -74,19 +72,19 @@ export function TimeSlot({
 			drag="y"
 			dragConstraints={constraintsRef}
 			dragElastic={0}
+			dragMomentum={false}
 			dragTransition={{
 				modifyTarget,
 			}}
 			style={{ top: y, height }}
 		>
-			<div className="top-drag-area">
-				{/* {getFormatedTime(start)} */}
-			</div>
+			<div className="top-drag-area"></div>
 
-			<div onPointerDown={startDrag} className="central-area"></div>
-			<div className="bottom-drag-area">
-				{/* {getFormatedTime(end)} */}
+			<div onPointerDown={startDrag} className="central-area">
+				{/* {id} */}
+				{getFormatedTime(start)} || {getFormatedTime(end)}
 			</div>
+			<div className="bottom-drag-area"></div>
 			{/* prettier-ignore */}
 			{/* <p>{`${getFormatedTime(timeSlot.start)} - ${getFormatedTime(timeSlot.end)}`}</p> */}
 		</motion.div>
