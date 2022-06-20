@@ -28,6 +28,7 @@ export function translateTimeToY(startTime: number) {
 
 	return yPos;
 }
+
 export function translateTimeToHeight(startTime: number, endTime: number) {
 	const yPos = translateTimeToY(startTime);
 	const yEnd = translateTimeToY(endTime);
@@ -102,4 +103,30 @@ export function findOverlappingSlots(
 			(start < s.start && start < s.end && end > s.start && end > s.end) // encompass
 	);
 	return overlappingItems;
+}
+
+export function handleTimeslotsMerge(
+	newTimeSlot: ITimeSlot,
+	newTimeslots: ITimeSlot[],
+	callback
+) {
+	const overlappingItems = findOverlappingSlots(newTimeSlot, newTimeslots);
+
+	if (overlappingItems.length) {
+		const overlappingIds = overlappingItems
+			.map(item => item.id)
+			.concat(newTimeSlot.id);
+
+		const mergedSlot = mergeTimeslots(newTimeslots, overlappingIds);
+
+		const filteredSlots = newTimeslots.filter(
+			item => !overlappingIds.includes(item.id)
+		);
+
+		const mergedSlots = [...filteredSlots, mergedSlot];
+
+		callback(mergedSlots);
+	} else {
+		callback(newTimeslots);
+	}
 }

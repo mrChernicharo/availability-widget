@@ -2,10 +2,9 @@ import { motion, useDragControls } from 'framer-motion';
 import { nanoid } from 'nanoid';
 import { PointerEvent, useEffect, useRef, useState } from 'react';
 import {
-	findOverlappingSlots,
 	getElementRect,
 	getFormatedTime,
-	mergeTimeslots,
+	handleTimeslotsMerge,
 	yToTime,
 } from '../lib/helpers';
 import { ITimeSlot } from '../lib/types';
@@ -67,28 +66,7 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 
 		const newTimeslots = [...timeSlots, newTimeSlot];
 
-		const overlappingItems = findOverlappingSlots(
-			newTimeSlot,
-			newTimeslots
-		);
-
-		if (overlappingItems.length) {
-			const overlappingIds = overlappingItems
-				.map(item => item.id)
-				.concat(newTimeSlot.id);
-
-			const mergedSlot = mergeTimeslots(newTimeslots, overlappingIds);
-
-			const filteredSlots = newTimeslots.filter(
-				item => !overlappingIds.includes(item.id)
-			);
-
-			const mergedSlots = [...filteredSlots, mergedSlot];
-
-			setTimeSlots(mergedSlots);
-		} else {
-			setTimeSlots(ts => [...ts, newTimeSlot]);
-		}
+		handleTimeslotsMerge(newTimeSlot, newTimeslots, setTimeSlots);
 	}
 
 	function handleHover(e: PointerEvent<HTMLDivElement>) {
@@ -101,30 +79,11 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 	}
 
 	function handleTimeSlotChange(timeSlot: ITimeSlot) {
-		let newTimeSlots = timeSlots.map(ts =>
+		let newTimeslots = timeSlots.map(ts =>
 			ts.id !== timeSlot.id ? ts : { ...timeSlot }
 		);
 
-		const overlappingItems = findOverlappingSlots(timeSlot, newTimeSlots);
-		// are we hitting some existing timeSlot?
-
-		if (overlappingItems.length) {
-			const overlappingIds = overlappingItems
-				.map(item => item.id)
-				.concat(timeSlot.id);
-
-			const mergedSlot = mergeTimeslots(newTimeSlots, overlappingIds);
-
-			const filteredSlots = newTimeSlots.filter(
-				item => !overlappingIds.includes(item.id)
-			);
-
-			const mergedSlots = [...filteredSlots, mergedSlot];
-
-			setTimeSlots(mergedSlots);
-		} else {
-			setTimeSlots(newTimeSlots);
-		}
+		handleTimeslotsMerge(timeSlot, newTimeslots, setTimeSlots);
 	}
 
 	useEffect(() => {
