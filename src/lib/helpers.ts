@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { COLUMN_HEIGHT } from './constants';
 import { ITimeSlot } from './types';
 
@@ -59,7 +60,7 @@ export function getElementRect(ref: React.RefObject<HTMLDivElement>) {
 
 export function mergeTimeslots(
 	timeSlots: ITimeSlot[],
-	overlappingIds: number[]
+	overlappingIds: string[]
 ) {
 	const overlapping = timeSlots.filter(item =>
 		overlappingIds.includes(item.id)
@@ -68,14 +69,14 @@ export function mergeTimeslots(
 	const mergedSlot = overlapping.reduce(
 		(acc, next) => {
 			acc = {
-				id: Math.random() * 1000,
+				id: nanoid(),
 				start: Math.min(acc.start, next.start),
 				end: Math.max(acc.end, next.end),
 			};
 			return acc;
 		},
 		{
-			id: 0,
+			id: '',
 			start: overlapping[0].start,
 			end: overlapping[0].end,
 		}
@@ -86,7 +87,10 @@ export function mergeTimeslots(
 	return mergedSlot;
 }
 
-export function findOverlappingSlots(timeSlot, newTimeSlots) {
+export function findOverlappingSlots(
+	timeSlot: ITimeSlot,
+	newTimeSlots: ITimeSlot[]
+) {
 	const { start, end } = timeSlot;
 	// check if should merge timeslots
 	// prettier-ignore

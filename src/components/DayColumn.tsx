@@ -31,9 +31,7 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 
 		const timeClicked = yToTime(e.clientY, columnHeight, columnTop);
 
-		const formated = getFormatedTime(timeClicked);
-
-		console.log(`${formated}`);
+		console.log(getFormatedTime(timeClicked));
 
 		// are we hitting some existing timeSlot?
 		const hitNobody = !timeSlots.find(
@@ -62,12 +60,13 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 
 		// newSlot will span for 1h. The click position will be in the exact middle of the timeSlot
 		const newTimeSlot = {
-			id: timeSlots.length + 1,
+			id: nanoid(),
 			start: slotStart,
 			end: slotEnd,
 		};
 
 		setTimeSlots(ts => [...ts, newTimeSlot]);
+		// handleTimeSlotChange(newTimeSlot);
 	}
 
 	function handleHover(e: PointerEvent<HTMLDivElement>) {

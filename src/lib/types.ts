@@ -1,5 +1,5 @@
 export type ITimeSlot = {
-	id: number;
+	id: string;
 	start: number;
 	end: number;
 };
