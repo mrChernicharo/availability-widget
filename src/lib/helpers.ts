@@ -89,12 +89,12 @@ export function mergeTimeslots(
 
 export function findOverlappingSlots(
 	timeSlot: ITimeSlot,
-	newTimeSlots: ITimeSlot[]
+	timeSlots: ITimeSlot[]
 ) {
 	const { start, end } = timeSlot;
 	// check if should merge timeslots
 	// prettier-ignore
-	const overlappingItems = newTimeSlots.filter(
+	const overlappingItems = timeSlots.filter(
 		(s, i) =>
 			(start < s.start && start < s.end && end > s.start && end < s.end) || // top overlap
 			(start > s.start && start < s.end && end > s.start && end < s.end) || // fit inside

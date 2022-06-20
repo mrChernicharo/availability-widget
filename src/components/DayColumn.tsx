@@ -34,11 +34,11 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 		console.log(getFormatedTime(timeClicked));
 
 		// are we hitting some existing timeSlot?
-		const hitNobody = !timeSlots.find(
+		const hitSomething = timeSlots.find(
 			slot => timeClicked >= slot.start && timeClicked <= slot.end
 		);
 
-		if (!hitNobody) {
+		if (hitSomething) {
 			console.log(
 				'HIT!!!',
 				timeSlots.find(
@@ -65,8 +65,30 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 			end: slotEnd,
 		};
 
-		setTimeSlots(ts => [...ts, newTimeSlot]);
-		// handleTimeSlotChange(newTimeSlot);
+		const newTimeslots = [...timeSlots, newTimeSlot];
+
+		const overlappingItems = findOverlappingSlots(
+			newTimeSlot,
+			newTimeslots
+		);
+
+		if (overlappingItems.length) {
+			const overlappingIds = overlappingItems
+				.map(item => item.id)
+				.concat(newTimeSlot.id);
+
+			const mergedSlot = mergeTimeslots(newTimeslots, overlappingIds);
+
+			const filteredSlots = newTimeslots.filter(
+				item => !overlappingIds.includes(item.id)
+			);
+
+			const mergedSlots = [...filteredSlots, mergedSlot];
+
+			setTimeSlots(mergedSlots);
+		} else {
+			setTimeSlots(ts => [...ts, newTimeSlot]);
+		}
 	}
 
 	function handleHover(e: PointerEvent<HTMLDivElement>) {
