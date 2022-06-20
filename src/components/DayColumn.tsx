@@ -1,6 +1,7 @@
 import { motion, useDragControls } from 'framer-motion';
 import { nanoid } from 'nanoid';
 import { PointerEvent, useEffect, useRef, useState } from 'react';
+import { getInitialSlot } from '../lib/constants';
 import {
 	getElementRect,
 	getFormatedTime,
@@ -74,8 +75,6 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 			getElementRect(columnRef);
 
 		const timeHovered = yToTime(e.clientY, columnHeight, columnTop);
-
-		// console.log('Enter', { timeHovered, y: translateTimeToY(timeHovered) });
 	}
 
 	function handleTimeSlotChange(timeSlot: ITimeSlot) {
@@ -89,6 +88,12 @@ export function DayColumn({ weekDay }: IDayColumnProps) {
 	useEffect(() => {
 		console.log(timeSlots);
 	}, [timeSlots]);
+
+	// set initial timeslots
+	useEffect(() => {
+		!['saturday', 'sunday'].includes(weekDay) &&
+			setTimeSlots([getInitialSlot()]);
+	}, []);
 
 	return (
 		<motion.div

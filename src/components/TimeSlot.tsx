@@ -21,13 +21,15 @@ export function TimeSlot({
 	onPosChange,
 }: ITimeSlotProps) {
 	const { id, start, end } = timeSlot;
+
+	const { height: columnHeight, top: columnTop } =
+		getElementRect(constraintsRef);
+
 	const slotRef = useRef<HTMLDivElement>(null);
 
 	const y = useMotionValue(translateTimeToY(start));
 	const height = translateTimeToHeight(start, end);
 	const dragControls = useDragControls();
-
-	// console.log({ y: y.get(), height, start });
 
 	function startDrag(e: PointerEvent<HTMLDivElement>) {
 		dragControls.start(e, { snapToCursor: false });
@@ -35,8 +37,6 @@ export function TimeSlot({
 
 	function modifyTarget(variation: number) {
 		const { top, bottom } = getElementRect(slotRef);
-		const { height: columnHeight, top: columnTop } =
-			getElementRect(constraintsRef);
 
 		let [newStart, newEnd] = [
 			yToTime(top, columnHeight, columnTop),
@@ -54,13 +54,9 @@ export function TimeSlot({
 		return variation;
 	}
 
-	function endDrag(e: PointerEvent<HTMLDivElement>) {
-		// y.updateAndNotify(y.get());
-		// y.set(y.get());
-	}
+	function endDrag(e: PointerEvent<HTMLDivElement>) {}
 
 	// useEffect(() => {
-	// console.log(containerDims);
 	// }, []);
 
 	return (
@@ -81,12 +77,9 @@ export function TimeSlot({
 			<div className="top-drag-area"></div>
 
 			<div onPointerDown={startDrag} className="central-area">
-				{/* {id} */}
 				{getFormatedTime(start)} || {getFormatedTime(end)}
 			</div>
 			<div className="bottom-drag-area"></div>
-			{/* prettier-ignore */}
-			{/* <p>{`${getFormatedTime(timeSlot.start)} - ${getFormatedTime(timeSlot.end)}`}</p> */}
 		</motion.div>
 	);
 }

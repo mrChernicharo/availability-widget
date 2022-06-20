@@ -1,7 +1,7 @@
 @import url(_global.scss);
 :root {
 	--primary-color: rgb(76, 79, 217);
-	--column-width: 100px;
+	--column-width: min(calc(100vw / 7), 120px);
 	--time-slot-width: calc(var(--column-width) - 4px);
 	--heading-height: 32px;
 	--column-height: 0; // set via js
@@ -15,6 +15,7 @@
 
 #AvailabilityWidget {
 	height: calc(var(--column-height) + var(--heading-height));
+	display: flex;
 }
 
 #DayColumn {
